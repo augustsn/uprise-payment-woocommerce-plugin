@@ -327,6 +327,8 @@ class WC_Checkout_Com_Webhook
         $environment =  $core_settings['ckocom_environment'] == 'sandbox' ? true : false;
         $gateway_debug = WC_Admin_Settings::get_option('cko_gateway_responses') == 'yes' ? true : false;
 
+        $core_settings['ckocom_sk'] = cko_is_nas_account() ? 'Bearer ' . $core_settings['ckocom_sk'] : $core_settings['ckocom_sk'];
+
         // Initialize the Checkout Api
         $checkout = new CheckoutApi($core_settings['ckocom_sk'], $environment);
 
