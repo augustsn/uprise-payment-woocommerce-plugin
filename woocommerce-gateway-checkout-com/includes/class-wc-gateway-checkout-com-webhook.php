@@ -116,7 +116,7 @@ class WC_Checkout_Com_Webhook
 
         // check if payment is already captured
         $already_captured = get_post_meta($order_id, 'cko_payment_captured', true );
-        $message = '.Webhook received from checkout.com Payment captured';
+        $message = 'Webhook received from checkout.com Payment captured';
 
         $already_authorized = get_post_meta($order_id, 'cko_payment_authorized', true);
 
