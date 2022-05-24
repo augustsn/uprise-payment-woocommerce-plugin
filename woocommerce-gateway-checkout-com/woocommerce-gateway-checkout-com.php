@@ -5,11 +5,11 @@
  * Description: Extends WooCommerce by Adding the Checkout.com Gateway.
  * Author: Checkout.com
  * Author URI: https://www.checkout.com/
- * Version: 4.3.8
+ * Version: 4.3.9
  * Requires at least: 4.0
- * Stable tag: 4.3.8
- * Tested up to: 5.9.2
- * WC tested up to: 6.3.1
+ * Stable tag: 4.3.9
+ * Tested up to: 5.9.3
+ * WC tested up to: 6.4.1
  * Text Domain: wc_checkout_com
  * Domain Path: /languages
  */
@@ -140,6 +140,14 @@ function cko_frames_js()
 {
     wp_register_script( 'cko-frames-script', 'https://cdn.checkout.com/js/framesv2.min.js', array( 'jquery' ) );
     wp_enqueue_script( 'cko-frames-script' );
+
+	$vars = array(
+		'card-number' => esc_html__( 'Please enter a valid card number', 'wc_checkout_com' ),
+		'expiry-date' => esc_html__( 'Please enter a valid expiry date', 'wc_checkout_com' ),
+		'cvv'         => esc_html__( 'Please enter a valid cvv code', 'wc_checkout_com' ),
+	);
+
+	wp_localize_script( 'cko-frames-script', 'cko_frames_vars', $vars );
 }
 
 /*
@@ -156,7 +164,7 @@ function cko_check_if_empty()
                 && $_POST['wc-wc_checkout_com_cards-payment-token'] !== 'new' ){
             // check if cvv is empty on checkout page
             if ( empty( $_POST['wc_checkout_com_cards-card-cvv']  ) ) {
-                wc_add_notice( 'Please enter a valid cvv.', 'error' );
+                wc_add_notice( esc_html__( 'Please enter a valid cvv.', 'wc_checkout_com' ), 'error' );
             }
         }
     }
@@ -467,4 +475,41 @@ function subscriptionCancelled( $subscription ) {
 	include_once( 'includes/subscription/class-wc-checkout-com-subscription.php' );
 
 	WC_Checkoutcom_Subscription::subscription_cancelled( $subscription );
+}
+
+/**
+ *  @TODO : Remove all below functions and logic once product is fixed.
+ */
+if ( cko_is_nas_account() ) {
+    add_filter( 'rewrite_rules_array', 'cko_add_rewrite_rules', -1 );
+    add_filter( 'query_vars', 'cko_add_query_vars' );
+    add_action( 'parse_request', 'cko_set_query_vars', -1, 1 );
+}
+
+function cko_add_rewrite_rules( $rules ) {
+
+    $new_rules = [];
+    foreach ( $rules as $rule => $value ) {
+
+        if ( '(.?.+?)(?:/([0-9]+))?/?$' === $rule ) {
+	        $new_rules['checkoutcom-callback'] = 'index.php?&cko-callback=true';
+        }
+	    $new_rules[ $rule ] = $value;
+    }
+
+    return $new_rules;
+}
+
+function cko_add_query_vars( $vars ) {
+    $vars[] = 'cko-callback';
+    $vars[] = 'cko-session-id';
+
+    return $vars;
+}
+
+function cko_set_query_vars( $wp ) {
+
+    if ( ! empty( $wp->query_vars['cko-callback'] ) ) {
+        $wp->set_query_var( 'wc-api', 'wc_checkoutcom_callback' );
+    }
 }
