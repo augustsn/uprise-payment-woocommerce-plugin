@@ -1,4 +1,9 @@
 <?php
+/**
+ * Webhook handler class.
+ *
+ * @package wc_checkout_com
+ */
 
 use Checkout\CheckoutApiException;
 
@@ -78,7 +83,7 @@ class WC_Checkout_Com_Webhook {
 		$order    = self::get_wc_order( $order_id );
 		$order_id = $order->get_id();
 
-		$order->add_order_note( __( 'Checkout.com Card verified webhook received', 'wc_checkout_com' ) );
+		$order->add_order_note( __( 'Checkout.com Card verified webhook received', 'checkout-com-unified-payments-api' ) );
 		// Set action id as woo transaction id.
 		update_post_meta( $order_id, '_transaction_id', $action_id );
 
@@ -132,7 +137,7 @@ class WC_Checkout_Com_Webhook {
 			return true;
 		}
 
-		$order->add_order_note( __( 'Checkout.com Payment Capture webhook received', 'wc_checkout_com' ) );
+		$order->add_order_note( __( 'Checkout.com Payment Capture webhook received', 'checkout-com-unified-payments-api' ) );
 
 		// Get action id from webhook data.
 		$action_id          = $webhook_data->action_id;
@@ -148,12 +153,12 @@ class WC_Checkout_Com_Webhook {
 		$status = WC_Admin_Settings::get_option( 'ckocom_order_captured', 'processing' );
 
 		/* translators: %s: Action ID. */
-		$order_message = sprintf( esc_html__( 'Checkout.com Payment Captured - Action ID : %s', 'wc_checkout_com' ), $action_id );
+		$order_message = sprintf( esc_html__( 'Checkout.com Payment Captured - Action ID : %s', 'checkout-com-unified-payments-api' ), $action_id );
 
 		// Check if webhook amount is less than order amount.
 		if ( $amount < $order_amount_cents ) {
 			/* translators: %s: Action ID. */
-			$order_message = sprintf( esc_html__( 'Checkout.com Payment partially captured - Action ID : %s', 'wc_checkout_com' ), $action_id );
+			$order_message = sprintf( esc_html__( 'Checkout.com Payment partially captured - Action ID : %s', 'checkout-com-unified-payments-api' ), $action_id );
 		}
 
 		// add notes for the order and update status.
@@ -220,7 +225,7 @@ class WC_Checkout_Com_Webhook {
 			return true;
 		}
 
-		$order->add_order_note( esc_html__( 'Checkout.com Payment Void webhook received', 'wc_checkout_com' ) );
+		$order->add_order_note( esc_html__( 'Checkout.com Payment Void webhook received', 'checkout-com-unified-payments-api' ) );
 
 		// Get action id from webhook data.
 		$action_id = $webhook_data->action_id;
@@ -233,7 +238,7 @@ class WC_Checkout_Com_Webhook {
 		$status = WC_Admin_Settings::get_option( 'ckocom_order_void', 'cancelled' );
 
 		/* translators: %s: Action ID. */
-		$order_message = sprintf( esc_html__( 'Checkout.com Payment Voided - Action ID : %s', 'wc_checkout_com' ), $action_id );
+		$order_message = sprintf( esc_html__( 'Checkout.com Payment Voided - Action ID : %s', 'checkout-com-unified-payments-api' ), $action_id );
 
 		// add notes for the order and update status.
 		$order->add_order_note( $order_message );
@@ -276,7 +281,7 @@ class WC_Checkout_Com_Webhook {
 		$order_amount_cents = WC_Checkoutcom_Utility::value_to_decimal( $order_amount, $order->get_currency() );
 		$get_transaction_id = get_post_meta( $order_id, '_transaction_id', true );
 
-		if ( $get_transaction_id == $action_id ) { // PHPCS:ignore WordPress.PHP.StrictComparisons.LooseComparison
+		if ( $get_transaction_id === $action_id ) {
 			return true;
 		}
 
@@ -286,7 +291,7 @@ class WC_Checkout_Com_Webhook {
 			return true;
 		}
 
-		$order->add_order_note( esc_html__( 'Checkout.com Payment Refund webhook received', 'wc_checkout_com' ) );
+		$order->add_order_note( esc_html__( 'Checkout.com Payment Refund webhook received', 'checkout-com-unified-payments-api' ) );
 
 		// Set action id as woo transaction id.
 		update_post_meta( $order_id, '_transaction_id', $action_id );
@@ -295,12 +300,12 @@ class WC_Checkout_Com_Webhook {
 		$refund_amount = WC_Checkoutcom_Utility::decimal_to_value( $amount, $order->get_currency() );
 
 		/* translators: %s: Action ID. */
-		$order_message = sprintf( esc_html__( 'Checkout.com Payment Refunded - Action ID : %s', 'wc_checkout_com' ), $action_id );
+		$order_message = sprintf( esc_html__( 'Checkout.com Payment Refunded - Action ID : %s', 'checkout-com-unified-payments-api' ), $action_id );
 
 		// Check if webhook amount is less than order amount - partial refund.
 		if ( $amount < $order_amount_cents ) {
 			/* translators: %s: Action ID. */
-			$order_message = sprintf( esc_html__( 'Checkout.com Payment partially refunded - Action ID : %s', 'wc_checkout_com' ), $action_id );
+			$order_message = sprintf( esc_html__( 'Checkout.com Payment partially refunded - Action ID : %s', 'checkout-com-unified-payments-api' ), $action_id );
 
 			$refund = wc_create_refund(
 				[
@@ -314,7 +319,7 @@ class WC_Checkout_Com_Webhook {
 		} elseif ( $amount == $order_amount_cents ) { // PHPCS:ignore WordPress.PHP.StrictComparisons.LooseComparison
 			// Full refund.
 			/* translators: %s: Action ID. */
-			$order_message = sprintf( esc_html__( 'Checkout.com Payment fully refunded - Action ID : %s', 'wc_checkout_com' ), $action_id );
+			$order_message = sprintf( esc_html__( 'Checkout.com Payment fully refunded - Action ID : %s', 'checkout-com-unified-payments-api' ), $action_id );
 
 			$refund = wc_create_refund(
 				[

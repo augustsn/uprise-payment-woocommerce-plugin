@@ -1,9 +1,16 @@
 <?php
+/**
+ * Subscription order handler class.
+ *
+ * @package wc_checkout_com
+ */
+
+defined( 'ABSPATH' ) || exit;
 
 include_once WC_CHECKOUTCOM_PLUGIN_PATH . '/includes/api/class-wc-checkoutcom-api-request.php';
 
 /**
- *  This class handles the payment for subscription renewal
+ *  This class handles the payment for subscription renewal.
  */
 class WC_Checkoutcom_Subscription {
 
@@ -60,7 +67,7 @@ class WC_Checkoutcom_Subscription {
 		$status  = WC_Admin_Settings::get_option( 'ckocom_order_authorised', 'on-hold' );
 		$message = sprintf(
 			/* translators: %s: Payment result ID. */
-			__( 'Checkout.com Payment Authorised - Action ID : %s ', 'wc_checkout_com' ),
+			__( 'Checkout.com Payment Authorised - Action ID : %s ', 'checkout-com-unified-payments-api' ),
 			$payment_result['action_id']
 		);
 
@@ -70,7 +77,7 @@ class WC_Checkoutcom_Subscription {
 			$status  = WC_Admin_Settings::get_option( 'ckocom_order_flagged', 'flagged' );
 			$message = sprintf(
 				/* translators: %s: Payment result ID. */
-				__( 'Checkout.com Payment Flagged - Action ID : %s ', 'wc_checkout_com' ),
+				__( 'Checkout.com Payment Flagged - Action ID : %s ', 'checkout-com-unified-payments-api' ),
 				$payment_result['action_id']
 			);
 		}
