@@ -33,6 +33,17 @@ jQuery(function () {
       checkUserLoggedIn();
       jQuery(".cko-cvv").hide();
     }
+
+    if ( jQuery( '#payment_method_wc_checkout_com_cards' ).is( ':checked' )
+        && jQuery( ".payment_box.payment_method_wc_checkout_com_cards" )
+            .children( "ul.woocommerce-SavedPaymentMethods.wc-saved-payment-methods" )
+            .attr( "data-count" ) === '0'
+    ) {
+      jQuery( ".cko-form" ).show();
+      checkUserLoggedIn();
+      jQuery( ".cko-cvv" ).hide();
+    }
+
   } );
 
   // Triggers when new card details filled to update name for tokenization.
