@@ -1,19 +1,39 @@
+/* global Frames */
 jQuery(function () {
   // Set default ul to auto
-  jQuery(".payment_box.payment_method_wc_checkout_com_cards > ul").css(
-    "margin",
-    "auto"
-  );
+  jQuery(".payment_box.payment_method_wc_checkout_com_cards > ul").css( "margin", "auto" );
 
   if (typeof Frames != "undefined") {
     Frames.removeAllEventHandlers();
   }
 
-  Frames.init({
-    debug: document.getElementById("debug").value === "yes" ? true : false,
-    publicKey: document.getElementById("public-key").value,
-    localization: document.getElementById("localization").value,
-  });
+  function initFrames() {
+    Frames.init({
+      debug: document.getElementById( "debug" ).value === "yes",
+      publicKey: document.getElementById("public-key").value,
+      localization: document.getElementById("localization").value,
+      schemeChoice: {
+        frameSelector: ".scheme-choice-frame"
+      },
+      style: {
+        base: {
+          borderRadius: '3px'
+        }
+      }
+    });
+  }
+  initFrames();
+
+  jQuery( document.body ).on( 'updated_checkout', function() {
+    initFrames();
+
+    // Show CC input if new card is selected.
+    if ( jQuery("#wc-wc_checkout_com_cards-payment-token-new").is(':checked') ) {
+      jQuery(".cko-form").show();
+      checkUserLoggedIn();
+      jQuery(".cko-cvv").hide();
+    }
+  } );
 
   // Triggers when new card details filled to update name for tokenization.
   Frames.addEventHandler(
@@ -35,14 +55,18 @@ jQuery(function () {
   Frames.addEventHandler(Frames.Events.CARD_TOKENIZED, onCardTokenized);
 
   function onCardTokenized(event) {
+    // 2. After card tokenized this event fires.
     if (
       document.getElementById("cko-card-token").value.length === 0 ||
       document.getElementById("cko-card-token").value != event.token
     ) {
       document.getElementById("cko-card-token").value = event.token;
       document.getElementById("cko-card-bin").value = event.bin;
+      document.getElementById("cko-card-scheme").value = event.preferred_scheme;
+      // 3. This again click place order.
       jQuery("#place_order").trigger("click");
       document.getElementById("cko-card-token").value = "";
+      document.getElementById("cko-card-scheme").value = "";
       Frames.enableSubmitForm();
     }
   }
@@ -188,10 +212,10 @@ jQuery(function () {
     ) {
       jQuery(".cko-form").hide();
 
-      jQuery(
-        "input[type=radio][name=wc-wc_checkout_com_cards-payment-token]"
-      ).change(function () {
-        if (this.value == "new") {
+      // jQuery( "input[type=radio][name=wc-wc_checkout_com_cards-payment-token]" ).change(function () {
+      jQuery(document).on( 'change', "input[type=radio][name=wc-wc_checkout_com_cards-payment-token]", function () {
+        // if ( this.value === "new" ) {
+        if ( this.value === "new" && jQuery(this).is(':checked') ) {
           // display frames if new card is selected
           jQuery(".cko-form").show();
           checkUserLoggedIn();
@@ -229,7 +253,7 @@ jQuery(function () {
     }
 
     // hook place order button
-    jQuery("#place_order").on("click", function (e) {
+    jQuery(document.body).on("click","#place_order", function (e) {
       // check if checkout.com is selected
       if (jQuery("#payment_method_wc_checkout_com_cards").is(":checked")) {
         // check if new card exist
@@ -238,9 +262,9 @@ jQuery(function () {
           if (
             jQuery("#wc-wc_checkout_com_cards-payment-token-new").is(":checked")
           ) {
-            if (document.getElementById("cko-card-token").value.length > 0) {
+            if (document.getElementById("cko-card-token").value.length > 0) { // 4. after tokenize check for token in HTML.
               return true;
-            } else if (Frames.isCardValid()) {
+            } else if (Frames.isCardValid()) { // 1. On place order first come here. then goto onCardTokenized()
               Frames.submitCard();
             } else if (!Frames.isCardValid()) {
               alert(document.getElementById("card-validation-alert").value);
@@ -260,7 +284,7 @@ jQuery(function () {
             return true;
           }
         } else {
-          if (document.getElementById("cko-card-token").value.length > 0) {
+          if (document.getElementById("cko-card-token").value.length > 0) { // 4. after tokenize check for token in HTML.
             return true;
           } else if (Frames.isCardValid()) {
             Frames.submitCard();
