@@ -20,9 +20,16 @@ class WC_Gateway_Checkout_Com_Google_Pay extends WC_Payment_Gateway {
 		$this->method_title       = __( 'Checkout.com', 'checkout-com-unified-payments-api' );
 		$this->method_description = __( 'The Checkout.com extension allows shop owners to process online payments through the <a href="https://www.checkout.com">Checkout.com Payment Gateway.</a>', 'checkout-com-unified-payments-api' );
 		$this->title              = __( 'Google Pay', 'checkout-com-unified-payments-api' );
-
-		$this->has_fields = true;
-		$this->supports   = [ 'products', 'refunds' ];
+		$this->has_fields         = true;
+		$this->supports           = [
+			'products',
+			'refunds',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_date_changes',
+		];
 
 		$this->init_form_fields();
 		$this->init_settings();
@@ -164,6 +171,11 @@ class WC_Gateway_Checkout_Com_Google_Pay extends WC_Payment_Gateway {
 			return;
 		}
 
+		if ( class_exists( 'WC_Subscriptions_Order' ) ) {
+			// Save source id for subscription.
+			WC_Checkoutcom_Subscription::save_source_id( $order_id, $order, $result['source']['id'] );
+		}
+
 		// Set action id as woo transaction id.
 		update_post_meta( $order_id, '_transaction_id', $result['action_id'] );
 		update_post_meta( $order_id, '_cko_payment_id', $result['id'] );
@@ -191,7 +203,7 @@ class WC_Gateway_Checkout_Com_Google_Pay extends WC_Payment_Gateway {
 		wc_reduce_stock_levels( $order_id );
 
 		// Remove cart.
-		$woocommerce->cart->empty_cart();
+		WC()->cart->empty_cart();
 
 		// Return thank you page.
 		return [
