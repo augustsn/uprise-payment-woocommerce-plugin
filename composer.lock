@@ -8,7 +8,7 @@
     "packages": [
         {
             "name": "checkout/checkout-sdk-php",
-            "version": "2.5.1",
+            "version": "2.5.1-a",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jackie217330/uprise-payment-sdk-php.git",
@@ -4813,7 +4813,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "checkout/checkout-sdk-php": 15
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
