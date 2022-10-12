@@ -1,13 +1,17 @@
-/* global Frames, cko_frames_vars */
+/* global Frames, upy_frames_vars */
 jQuery(function () {
-
-  if ( 'yes' === cko_frames_vars['is-add-payment-method'] ) {
-    jQuery("#wc-wc_checkout_com_cards-payment-token-new").prop( "checked", true );
+  if ("yes" === upy_frames_vars["is-add-payment-method"]) {
+    jQuery("#wc-wc_uprise_payment_cards-payment-token-new").prop(
+      "checked",
+      true
+    );
   }
 
-
   // Set default ul to auto
-  jQuery(".payment_box.payment_method_wc_checkout_com_cards > ul").css( "margin", "auto" );
+  jQuery(".payment_box.payment_method_wc_uprise_payment_cards > ul").css(
+    "margin",
+    "auto"
+  );
 
   if (typeof Frames != "undefined") {
     Frames.removeAllEventHandlers();
@@ -15,43 +19,45 @@ jQuery(function () {
 
   function initFrames() {
     Frames.init({
-      debug: document.getElementById( "debug" ).value === "yes",
+      debug: document.getElementById("debug").value === "yes",
       publicKey: document.getElementById("public-key").value,
       localization: document.getElementById("localization").value,
       schemeChoice: {
-        frameSelector: ".scheme-choice-frame"
+        frameSelector: ".scheme-choice-frame",
       },
       style: {
         base: {
-          borderRadius: '3px'
-        }
-      }
+          borderRadius: "3px",
+        },
+      },
     });
 
-    if ( jQuery( ".payment_box.payment_method_wc_checkout_com_cards" )
-        .children( "ul.woocommerce-SavedPaymentMethods.wc-saved-payment-methods" )
-        .attr( "data-count" ) === '0'
+    if (
+      jQuery(".payment_box.payment_method_wc_uprise_payment_cards")
+        .children("ul.woocommerce-SavedPaymentMethods.wc-saved-payment-methods")
+        .attr("data-count") === "0"
     ) {
-      jQuery( ".cko-form" ).show();
-      checkUserLoggedIn();
-      jQuery( ".cko-cvv" ).hide();
-    }
-
-  }
-
-  initFrames();
-
-  jQuery( document.body ).on( 'updated_checkout', function() {
-    initFrames();
-
-    // Show CC input if new card is selected.
-    if ( ! jQuery("#wc-wc_checkout_com_cards-payment-token-new").length || jQuery("#wc-wc_checkout_com_cards-payment-token-new").is(':checked') ) {
       jQuery(".cko-form").show();
       checkUserLoggedIn();
       jQuery(".cko-cvv").hide();
     }
+  }
 
-  } );
+  initFrames();
+
+  jQuery(document.body).on("updated_checkout", function () {
+    initFrames();
+
+    // Show CC input if new card is selected.
+    if (
+      !jQuery("#wc-wc_uprise_payment_cards-payment-token-new").length ||
+      jQuery("#wc-wc_uprise_payment_cards-payment-token-new").is(":checked")
+    ) {
+      jQuery(".cko-form").show();
+      checkUserLoggedIn();
+      jQuery(".cko-cvv").hide();
+    }
+  });
 
   // Triggers when new card details filled to update name for tokenization.
   Frames.addEventHandler(
@@ -71,6 +77,7 @@ jQuery(function () {
                 };
             }
         }
+      }
     }
   );
 
@@ -113,16 +120,15 @@ jQuery(function () {
       return logos;
     }
     var errors = {};
-    if ( cko_frames_vars['card-number'] ) {
-      errors["card-number"] = cko_frames_vars["card-number"];
-      errors["expiry-date"] = cko_frames_vars["expiry-date"];
-      errors["cvv"] = cko_frames_vars["cvv"];
+    if (upy_frames_vars["card-number"]) {
+      errors["card-number"] = upy_frames_vars["card-number"];
+      errors["expiry-date"] = upy_frames_vars["expiry-date"];
+      errors["cvv"] = upy_frames_vars["cvv"];
     } else {
       errors["card-number"] = "Please enter a valid card number";
       errors["expiry-date"] = "Please enter a valid expiry date";
       errors["cvv"] = "Please enter a valid cvv code";
     }
-
 
     Frames.addEventHandler(
       Frames.Events.FRAME_VALIDATION_CHANGED,
@@ -228,40 +234,44 @@ jQuery(function () {
   setTimeout(function () {
     // check if saved card exist
     if (
-      jQuery(".payment_box.payment_method_wc_checkout_com_cards")
+      jQuery(".payment_box.payment_method_wc_uprise_payment_cards")
         .children("ul.woocommerce-SavedPaymentMethods.wc-saved-payment-methods")
         .attr("data-count") > 0
     ) {
       jQuery(".cko-form").hide();
 
-      // jQuery( "input[type=radio][name=wc-wc_checkout_com_cards-payment-token]" ).change(function () {
-      jQuery(document).on( 'change', "input[type=radio][name=wc-wc_checkout_com_cards-payment-token]", function () {
-        // if ( this.value === "new" ) {
-        if ( this.value === "new" && jQuery(this).is(':checked') ) {
-          // display frames if new card is selected
-          jQuery(".cko-form").show();
-          checkUserLoggedIn();
-          jQuery(".cko-cvv").hide();
-        } else {
-          jQuery(".cko-form").hide();
-          jQuery(".cko-save-card-checkbox").hide();
-          jQuery(".cko-cvv").show();
+      // jQuery( "input[type=radio][name=wc-wc_uprise_payment_cards-payment-token]" ).change(function () {
+      jQuery(document).on(
+        "change",
+        "input[type=radio][name=wc-wc_uprise_payment_cards-payment-token]",
+        function () {
+          // if ( this.value === "new" ) {
+          if (this.value === "new" && jQuery(this).is(":checked")) {
+            // display frames if new card is selected
+            jQuery(".cko-form").show();
+            checkUserLoggedIn();
+            jQuery(".cko-cvv").hide();
+          } else {
+            jQuery(".cko-form").hide();
+            jQuery(".cko-save-card-checkbox").hide();
+            jQuery(".cko-cvv").show();
 
-          if (document.getElementById("is-mada").value === 1) {
-            if (this.value === document.getElementById("mada-token")) {
-              jQuery(".cko-form").hide();
-              jQuery(".cko-cvv").show();
-            } else {
-              jQuery(".cko-cvv").hide();
+            if (document.getElementById("is-mada").value === 1) {
+              if (this.value === document.getElementById("mada-token")) {
+                jQuery(".cko-form").hide();
+                jQuery(".cko-cvv").show();
+              } else {
+                jQuery(".cko-cvv").hide();
+              }
             }
           }
         }
-      });
+      );
     } else {
       jQuery(".cko-form").show();
       checkUserLoggedIn();
       jQuery(
-        "input[type=radio][name=wc-wc_checkout_com_cards-payment-token]"
+        "input[type=radio][name=wc-wc_uprise_payment_cards-payment-token]"
       ).prop("checked", true);
     }
 
@@ -275,18 +285,24 @@ jQuery(function () {
     }
 
     // hook place order button
-    jQuery(document.body).on("click","#place_order", function (e) {
+    jQuery(document.body).on("click", "#place_order", function (e) {
       // check if Uprise Payment is selected
-      if (jQuery("#payment_method_wc_checkout_com_cards").is(":checked")) {
+      if (jQuery("#payment_method_wc_uprise_payment_cards").is(":checked")) {
         // check if new card exist
-        if (jQuery("#wc-wc_checkout_com_cards-payment-token-new").length > 0) {
+        if (
+          jQuery("#wc-wc_uprise_payment_cards-payment-token-new").length > 0
+        ) {
           // check if new card is selected else process with saved card
           if (
-            jQuery("#wc-wc_checkout_com_cards-payment-token-new").is(":checked")
+            jQuery("#wc-wc_uprise_payment_cards-payment-token-new").is(
+              ":checked"
+            )
           ) {
-            if (document.getElementById("cko-card-token").value.length > 0) { // 4. after tokenize check for token in HTML.
+            if (document.getElementById("cko-card-token").value.length > 0) {
+              // 4. after tokenize check for token in HTML.
               return true;
-            } else if (Frames.isCardValid()) { // 1. On place order first come here. then goto onCardTokenized()
+            } else if (Frames.isCardValid()) {
+              // 1. On place order first come here. then goto onCardTokenized()
               Frames.submitCard();
             } else if (!Frames.isCardValid()) {
               alert(document.getElementById("card-validation-alert").value);
@@ -294,7 +310,7 @@ jQuery(function () {
           } else if (jQuery("#add_payment_method").length > 0) {
             // check if card is valid from add-payment-method
             if (
-              jQuery("#payment_method_wc_checkout_com_cards").is(":checked")
+              jQuery("#payment_method_wc_uprise_payment_cards").is(":checked")
             ) {
               if (Frames.isCardValid()) {
                 Frames.submitCard();
@@ -306,7 +322,8 @@ jQuery(function () {
             return true;
           }
         } else {
-          if (document.getElementById("cko-card-token").value.length > 0) { // 4. after tokenize check for token in HTML.
+          if (document.getElementById("cko-card-token").value.length > 0) {
+            // 4. after tokenize check for token in HTML.
             return true;
           } else if (Frames.isCardValid()) {
             Frames.submitCard();
