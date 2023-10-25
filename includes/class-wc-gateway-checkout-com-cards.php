@@ -955,12 +955,12 @@ class WC_Gateway_Checkout_Com_Cards extends WC_Payment_Gateway_CC {
 
 		$core_settings['ckocom_sk'] = cko_is_nas_account() ? 'Bearer ' . $core_settings['ckocom_sk'] : $core_settings['ckocom_sk'];
 
-		$signature = WC_Checkoutcom_Utility::verify_signature( $raw_event, $core_settings['ckocom_sk'], $header_signature );
+// 		$signature = WC_Checkoutcom_Utility::verify_signature( $raw_event, $core_settings['ckocom_sk'], $header_signature );
 
 		// check if cko signature matches.
-		if ( false === $signature ) {
-			return http_response_code( 401 );
-		}
+// 		if ( false === $signature ) {
+// 			return http_response_code( 401 );
+// 		}
 
 		$payment_id = get_post_meta( $data->data->metadata->order_id, '_cko_payment_id', true );
 
